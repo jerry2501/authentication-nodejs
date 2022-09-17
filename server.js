@@ -38,6 +38,8 @@ db.getConnection((err, connection) => {
     console.log("DB connected successful: " + connection.threadId)
 })
 
+
+
 //For starting express server
 const port = process.env.PORT
 app.listen(port,
@@ -45,6 +47,7 @@ app.listen(port,
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+app.set('view engine','ejs')
 // app.use(express.json())
 //middleware to read req.body.<params>
 //CREATE USER
@@ -123,7 +126,7 @@ app.post("/login", (req, res) => {
                     if (await bcrypt.compare(password, hashedPassword)) {
                         console.log("---------> Login Successful")
                         //res.send(`${user} is logged in!`)
-                        res.redirect('/public/welcome.html')
+                        res.render(__dirname+'/public/users',{userr:result})
                     }
                     else {
                         console.log("---------> Password Incorrect")
@@ -136,3 +139,44 @@ app.post("/login", (req, res) => {
 
 }) //end of app.post()
 
+app.get('/users',function(req,res){
+    var username = req.query.username;
+    db.getConnection(async (err, connection) => {
+        if (err) throw (err)
+        const sqlSearch = "Select * from newusers"
+        await connection.query(sqlSearch, async (err, result) => {
+            connection.release()
+
+            if (err) throw (err)
+            if (result.length == 0) {
+                console.log("--------> User does not exist")
+                res.sendStatus(404)
+            }
+            else {
+                console.log(result)
+                res.render(__dirname+'/public/users',{userr:result});
+            }//end of User exists i.e. results.length==0 
+        }) //end of connection.query()
+    }) 
+})//
+
+app.get('/user-search',function(req,res){
+    var username = req.query.username;
+    db.getConnection(async (err, connection) => {
+        if (err) throw (err)
+        const sqlSearch = "Select * from newusers where username LIKE '%"+username+"%'"
+        await connection.query(sqlSearch, async (err, result) => {
+            connection.release()
+
+            if (err) throw (err)
+            if (result.length == 0) {
+                console.log("--------> User does not exist")
+                res.sendStatus(404)
+            }
+            else {
+                console.log(result)
+                res.render(__dirname+'/public/users',{userr:result});
+            }//end of User exists i.e. results.length==0 
+        }) //end of connection.query()
+    }) //
+});

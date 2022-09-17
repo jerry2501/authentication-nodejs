@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+        <h1>Search here</h1>
+        <form action="user-search">
+            <input type="search" name="username" placeholder="Search username">
+            <input type="submit" value="search">
+        </form>
+        <br>
+        <br>
+
+        <h2>Userlist</h2>
+        <table border="1" width ="30%">
+            <tr>
+                <th>Username</th>
+            </tr>
+            <tr>
+                <% if(userr.length > 0){ %>
+                    <% for(var i=0;i<userr.length;i++){ %>
+                        <tr>
+                            <td align="center">
+                            <%- userr[i].username %>
+                        </td>
+                    </tr>
+                        <%}%>
+                    <%}else{ %>
+                        <tr><td>Data not found!!</td></tr>
+                        <%}%>
+
+            </tr>
+        </table>
+    </body>
+</html>
